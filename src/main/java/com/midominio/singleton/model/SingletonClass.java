@@ -1,5 +1,7 @@
 package com.midominio.singleton.model;
 
+import jdk.internal.org.objectweb.asm.commons.JSRInlinerAdapter;
+
 /**
  * This class implement the singleton pattern design.
  *
@@ -31,7 +33,9 @@ public class SingletonClass {
      * @return unique class of SingletonClass.
      */
     public static SingletonClass getSingleton(String id) {
-        return isUniqueInstance(id);
+        return (singleton == null)
+                ? singleton = new SingletonClass(id)
+                : singleton;
     }
 
     /**
@@ -40,19 +44,14 @@ public class SingletonClass {
      * @return unique class of SingletonClass.
      */
     public synchronized static SingletonClass getSingletonThreads(String id) {
-        return isUniqueInstance(id);
-    }
-
-    /**
-     * Method to validate if the instance was created.
-     *
-     * @param id of the class.
-     * @return the instance of this class.
-     */
-    private static SingletonClass isUniqueInstance(String id) {
-        return (singleton == null)
-                ? singleton = new SingletonClass(id)
-                : singleton;
+        if (singleton == null){
+            synchronized (SingletonClass.class) {
+                if (singleton == null) {
+                    singleton = new SingletonClass(id);
+                }
+            }
+        }
+        return singleton;
     }
 
     // Getters and setters.
